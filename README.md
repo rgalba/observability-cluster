@@ -1,5 +1,6 @@
 # observability-cluster
- Observability cluster using Microk8s
+
+1 - Observability cluster using Microk8s
 
 ## Basic setup
 
@@ -23,3 +24,15 @@ helm repo update
 helm install --namespace minio-operator --create-namespace --set tenants.servers=4 --generate-name minio/minio-operator
 helm install --namespace minio-operator --create-namespace --set tenants.servers="4" --set tenants.servers.storageClassName="microk8s-hostpath" --generate-name minio/minio-operator
 ```
+
+## Ansible setup
+
+```
+sudo apt-get install python-software-properties
+sudo apt-add-repository -y ppa:ansible/ansible
+sudo apt-get update
+sudo apt-get install -y ansible
+ansible --version
+```
+
+2 - Observability cluster using a Server-based with Ansible
