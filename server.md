@@ -135,3 +135,53 @@ sudo systemctl restart prometheus
 sudo systemctl status prometheus
 ```
 
+## Web browser access
+
+The services are available at:
+
+- (Prometheus)[192.168.10.50:9090]
+- (AlertManager)[192.168.10.50:9093]
+- (Grafana)[192.168.10.50:3000]
+
+## Set up the node exporter
+
+```
+sudo useradd --no-create-home --shell /bin/false node_exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v0.17.0/node_exporter-0.17.0.linux-amd64.tar.gz
+tar -xvf node_exporter-0.17.0.linux-amd64.tar.gz
+cd node_exporter-0.17.0.linux-amd64/
+sudo mv node_exporter /usr/local/bin/
+sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+sudo vim /etc/systemd/system/node_exporter.service
+```
+
+```
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```
+sudo systemctl daemon-reload
+sudo systemctl start node_exporter
+sudo vim /etc/prometheus/prometheus.yml
+```
+
+```
+- job_name: 'node_exporter'
+  static_configs:
+  - targets: ['localhost:9100']
+```
+
+```
+sudo systemctl restart prometheus
+```
