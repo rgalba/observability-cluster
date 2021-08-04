@@ -35,7 +35,28 @@ eksctl utils update-cluster-logging --enable-types all
 eksctl utils write-kubeconfig --cluster=eks-lab-cluster --kubeconfig=/vagrant/eks-kube-config --set-kubeconfig-context=true
 ```
 
+### Install Helm
+
+```
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+helm help
+```
+
+### Deploy Prometheus
+
+```
+kubectl create namespace prometheus
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm upgrade -i prometheus prometheus-community/prometheus \
+    --namespace prometheus \
+    --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"
+kubectl get pods -n prometheus
+```
+
 -----
 References
 
 - [EKSCTL - managing clusters](https://https://eksctl.io/usage/creating-and-managing-clusters/)
+- [EKS Prometheus](https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html)
