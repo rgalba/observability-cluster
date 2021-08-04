@@ -66,7 +66,7 @@ kubectl get deployment metrics-server -n kube-system
 
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install my-release bitnami/minio
+helm install my-release bitnami/minio --set accessKey.password="eksonminio",secretKey.password="eksonminio",persistence.storageClass="gp2"
 ```
 
 -----
