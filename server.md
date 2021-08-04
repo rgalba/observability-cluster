@@ -185,3 +185,47 @@ sudo vim /etc/prometheus/prometheus.yml
 ```
 sudo systemctl restart prometheus
 ```
+
+## Setup alerts
+
+```yaml
+groups:
+  - name: uptime
+    rules:
+      - record: job:uptime:average:prometheus
+        expr: avg without (instance) (up{job="prometheus"})
+      - alert: PrometheusDown
+        expr: job:uptime:average:prometheus < .75
+        for: 30s
+        labels:
+          severity: page
+          team: devops
+```
+
+## Setup Docker
+
+```
+sudo snap install docker
+sudo snap connect docker:home
+sudo addgroup --system docker
+sudo adduser $USER docker
+newgrp docker
+sudo snap disable docker
+sudo snap enable docker
+```
+
+## Setup Mailcatcher
+
+```
+docker run --rm -d -p 1025:1025 -p 1080:1080 jeanberu/mailcatcher
+```
+
+## Alert to MS Teams
+
+```
+docker run -d -p 2000:2000 \
+    --name="promteams" \
+    -e TEAMS_INCOMING_WEBHOOK_URL="https://outlook.office.com/webhook/xxx" \
+    -e TEAMS_REQUEST_URI=alertmanager \
+    quay.io/prometheusmsteams/prometheus-msteams
+```
