@@ -55,6 +55,13 @@ helm upgrade -i prometheus prometheus-community/prometheus \
 kubectl get pods -n prometheus
 ```
 
+### Installing Metrics Server
+
+```
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl get deployment metrics-server -n kube-system
+```
+
 -----
 References
 
