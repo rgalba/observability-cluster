@@ -62,6 +62,13 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/late
 kubectl get deployment metrics-server -n kube-system
 ```
 
+### Installing Minio
+
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install my-release bitnami/minio
+```
+
 -----
 References
 
