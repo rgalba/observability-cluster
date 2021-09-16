@@ -7,6 +7,7 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 unzip awscliv2.zip
 sudo ./aws/install
 export PATH=$PATH:/usr/local/bin/
+sudo date -s '2021-08-04 10:23'
 aws configure
 ```
 
@@ -30,9 +31,11 @@ kubectl version --short --client
 ### Create an EKS cluster
 
 ```shell
+CLUSTER_NAME=eks-lab
+export  KUBECONFIG=/vagrant/eks-kube-config
 eksctl create cluster -f /vagrant/eks-config.yml
-eksctl utils update-cluster-logging --enable-types all
-eksctl utils write-kubeconfig --cluster=eks-lab-cluster --kubeconfig=/vagrant/eks-kube-config --set-kubeconfig-context=true
+eksctl utils update-cluster-logging --enable-types all --cluster=$CLUSTER_NAME --approve
+eksctl utils write-kubeconfig --cluster=$CLUSTER_NAME --kubeconfig=/vagrant/eks-kube-config --set-kubeconfig-context=true
 ```
 
 ### Install Helm
@@ -44,22 +47,30 @@ chmod 700 get_helm.sh
 helm help
 ```
 
-### Deploy Prometheus
-
-```
-kubectl create namespace prometheus
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm upgrade -i prometheus prometheus-community/prometheus \
-    --namespace prometheus \
-    --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"
-kubectl get pods -n prometheus
-```
-
 ### Installing Metrics Server
 
 ```
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 kubectl get deployment metrics-server -n kube-system
+```
+
+### Deploy Prometheus
+
+```
+kubectl create namespace monitoring
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm upgrade -i prometheus prometheus-community/prometheus \
+    --namespace monitoring \
+    --set alertmanager.persistentVolume.storageClass="microk8s-hostpath",server.persistentVolume.storageClass="microk8s-hostpath"
+kubectl get pods -n monitoring
+```
+
+### Deploy Grafana
+
+```
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install my-grafana grafana/grafana --namespace prometheus
 ```
 
 ### Installing Minio
